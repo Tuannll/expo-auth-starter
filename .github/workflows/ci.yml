@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Lint, typecheck, and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Schema validation and client generation do not connect to this database.
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/expo_auth_ci
+      CI: "true"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npm run db:generate --workspace=server
+
+      - name: Validate Prisma schema
+        run: npm exec --workspace=server -- prisma validate
+
+      - name: Lint and check server types
+        run: npm run lint
+
+      - name: Check mobile types
+        run: npm exec --workspace=mobile -- tsc --noEmit
+
+      - name: Run tests
+        run: npm test

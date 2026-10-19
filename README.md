@@ -11,6 +11,8 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)](compose.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22C55E)](LICENSE)
 
+**English** | [Tiếng Việt](README.vi.md)
+
 **[🚀 Quick Start](#quick-start) • [✨ Features](#features) • [📦 API](#api) • [🛠️ Tech Details](#technical-details) • [❓ FAQ](#faq) • [⚠️ Security](#security)**
 
 </div>
